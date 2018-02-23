@@ -53,30 +53,34 @@ class WavenetTrainer:
               continue_training_at_step=0):
         self.model.train()
         self.dataloader = torch.utils.data.DataLoader(self.dataset,
-                                                      batch_size=batch_size,
-                                                      shuffle=True,
-                                                      num_workers=8,
+                                                      batch_size=1, # batch_size,
+                                                      shuffle=False, # True,
+                                                      num_workers=1,
                                                       pin_memory=False)
-        step = continue_training_at_step
-        for current_epoch in range(epochs):
-            print("epoch", current_epoch)
-            tic = time.time()
-            for (x, target) in iter(self.dataloader):
-                x = Variable(x.type(self.dtype))
-                target = Variable(target.view(-1).type(self.ltype))
+        # step = continue_training_at_step
+        #for current_epoch in range(epochs):
+            #print("epoch", current_epoch)
+            #tic = time.time()
+        for (x, target) in iter(self.dataloader):
 
-                output = self.model(x)
-                loss = F.cross_entropy(output.squeeze(), target.squeeze())
+            for epoch in range(40):
+                y = Variable(x.type(self.dtype))
+                z = Variable(target.view(-1).type(self.ltype))
+
+                output = self.model(y)
+                loss = F.cross_entropy(output.squeeze(), z.squeeze())
                 self.optimizer.zero_grad()
                 loss.backward()
                 loss = loss.data[0]
+                print("epoch {} loss {}".format(epoch, loss))
 
                 if self.clip is not None:
                     torch.nn.utils.clip_grad_norm(self.model.parameters(), self.clip)
                 self.optimizer.step()
-                step += 1
+                # step += 1
 
                 # time step duration:
+                """
                 if step == 100:
                     toc = time.time()
                     print("one training step does take approximately " + str((toc - tic) * 0.01) + " seconds)")
@@ -88,6 +92,28 @@ class WavenetTrainer:
                     torch.save(self.model, self.snapshot_path + '/' + self.snapshot_name + '_' + time_string)
 
                 self.logger.log(step, loss)
+                """
+            break
+
+    def test(self):
+        self.model.eval()
+        self.dataloader = torch.utils.data.DataLoader(self.dataset,
+                                              batch_size=1, # batch_size,
+                                              shuffle=False, # True,
+                                              num_workers=1,
+                                              pin_memory=False )
+        for (x, target) in iter(self.dataloader):
+            x = Variable(x.type(self.dtype))
+            target = Variable(target.view(-1).type(self.ltype))
+
+            output = self.model(x)
+            loss = F.cross_entropy(output.squeeze(), target.squeeze())
+            loss = loss.data[0]
+            print("test loss {}".format(loss))
+
+            break
+
+
 
     def validate(self):
         self.model.eval()

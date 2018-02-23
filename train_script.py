@@ -51,22 +51,34 @@ def generate_and_log_samples(step):
                              length=sample_length,
                              temperatures=[0.5])
     tf_samples = tf.convert_to_tensor(samples, dtype=tf.float32)
-    logger.audio_summary('temperature_0.5', tf_samples, step, sr=16000)
+    # logger.audio_summary('temperature_0.5', tf_samples, step, sr=16000)
 
     samples = generate_audio(gen_model,
                              length=sample_length,
                              temperatures=[1.])
     tf_samples = tf.convert_to_tensor(samples, dtype=tf.float32)
-    logger.audio_summary('temperature_1.0', tf_samples, step, sr=16000)
+    #logger.audio_summary('temperature_1.0', tf_samples, step, sr=16000)
     print("audio clips generated")
 
 
+def generate_samples(model):
+    sample_length=32000
+    gen_model = load_latest_model_from('snapshots', use_cuda=False)
+    print("start generating...")
+    samples = generate_audio(model,
+                             length=sample_length,
+                             temperatures=[0.5])
+    wavfile.write("example_data.wav", 48000, samples)
+
+
+
+"""
 logger = TensorboardLogger(log_interval=200,
                            validation_interval=400,
                            generate_interval=800,
                            generate_function=generate_and_log_samples,
                            log_dir="logs/chaconne_model")
-
+"""
 trainer = WavenetTrainer(model=model,
                          dataset=data,
                          lr=0.0001,
@@ -74,7 +86,7 @@ trainer = WavenetTrainer(model=model,
                          snapshot_path='snapshots',
                          snapshot_name='chaconne_model',
                          snapshot_interval=1000,
-                         logger=logger,
+                         #logger=logger,
                          dtype=dtype,
                          ltype=ltype)
 
@@ -82,3 +94,6 @@ print('start training...')
 trainer.train(batch_size=16,
               epochs=10,
               continue_training_at_step=0)
+
+trainer.test()
+generate_samples(model)

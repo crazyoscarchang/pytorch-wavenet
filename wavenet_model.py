@@ -276,10 +276,10 @@ class WaveNetModel(nn.Module):
         regularizer = regularizer.squeeze() * regularize
         tic = time.time()
         for i in range(num_samples):
-            x = self.wavenet(input,
+            x = self.wavenet(input.cuda(),
                              dilation_func=self.queue_dilate).squeeze()
 
-            x -= regularizer
+            x -= regularizer.cuda()
 
             if temperature > 0:
                 # sample from softmax distribution
