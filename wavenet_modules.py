@@ -50,7 +50,6 @@ class DilatedQueue:
         self.data = data
         self.dtype = dtype
         if data == None:
-            print(num_channels, max_length)
             self.data = Variable(dtype(num_channels, max_length).zero_())
 
     def enqueue(self, input):
