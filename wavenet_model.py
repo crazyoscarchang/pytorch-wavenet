@@ -306,6 +306,8 @@ class WaveNetModel(nn.Module):
             if (i+1) == 100:
                 toc = time.time()
                 print("one generating step does take approximately " + str((toc - tic) * 0.01) + " seconds)")
+            if i is not 0 and i % 1000 == 0:
+                print("i = {}".format(i))
 
             # progress feedback
             if (i + num_given_samples) % progress_interval == 0:
