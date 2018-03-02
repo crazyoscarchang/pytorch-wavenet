@@ -32,7 +32,7 @@ class WaveNetModel(nn.Module):
                  residual_channels=32,
                  skip_channels=256,
                  end_channels=256,
-                 classes=256,
+                 classes=1,
                  output_length=32,
                  kernel_size=2,
                  dtype=torch.FloatTensor,
@@ -124,7 +124,7 @@ class WaveNetModel(nn.Module):
 
     def wavenet(self, input, dilation_func):
 
-        x = self.start_conv(input)
+        x = self.start_conv(input.view(1, 1, -1))
         skip = 0
 
         # WaveNet layers
@@ -256,7 +256,8 @@ class WaveNetModel(nn.Module):
         total_samples = num_given_samples + num_samples
 
         input = Variable(torch.FloatTensor(1, self.classes, 1).zero_())
-        input = input.scatter_(1, first_samples[0:1].view(1, -1, 1), 1.)
+        # input = input.scatter_(1, first_samples[0:1].view(1, -1, 1), 1.)
+        input = input.view(1, -1, 1)
 
         # fill queues with given samples
         for i in range(num_given_samples - 1):

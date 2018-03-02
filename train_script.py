@@ -89,7 +89,7 @@ trainer = WavenetTrainer(model=model,
                          snapshot_interval=1000,
                          # logger=logger,
                          dtype=dtype,
-                         ltype=ltype)
+                         ltype=torch.cuda.FloatTensor)
 
 print('start training...')
 trainer.train(batch_size=16,

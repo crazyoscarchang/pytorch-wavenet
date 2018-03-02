@@ -30,7 +30,7 @@ class WavenetTrainer:
                  snapshot_name='snapshot',
                  snapshot_interval=1000,
                  dtype=torch.FloatTensor,
-                 ltype=torch.LongTensor):
+                 ltype=torch.FloatTensor):
         self.model = model
         self.dataset = dataset
         self.dataloader = None
@@ -67,8 +67,11 @@ class WavenetTrainer:
                 y = Variable(x.type(self.dtype))
                 z = Variable(target.view(-1).type(self.ltype))
 
-                output = self.model(y)
-                loss = F.cross_entropy(output.squeeze(), z.squeeze())
+                output = self.model(y).type(self.dtype)
+                # saying that z.squeeze() is a long tensor
+                # print("output type: " + str(type(output.data)) + " output shape: " + str(output.data.shape))
+                # print("target type: " + str(type(z.data)) + " target shape: " + str(z.data.shape))
+                loss = F.mse_loss(output.squeeze(), z.squeeze())# F.cross_entropy(output.squeeze(), z.squeeze())
                 self.optimizer.zero_grad()
                 loss.backward()
                 loss = loss.data[0]
@@ -107,7 +110,7 @@ class WavenetTrainer:
             target = Variable(target.view(-1).type(self.ltype))
 
             output = self.model(x)
-            loss = F.cross_entropy(output.squeeze(), target.squeeze())
+            loss = F.mse_loss(output.squeeze(), target.squeeze()) # F.cross_entropy(output.squeeze(), target.squeeze())
             loss = loss.data[0]
             print("test loss {}".format(loss))
 

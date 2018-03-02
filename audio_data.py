@@ -15,7 +15,7 @@ class WavenetDataset(torch.utils.data.Dataset):
                  item_length,
                  target_length,
                  file_location=None,
-                 classes=256,
+                 classes=1,
                  sampling_rate=16000,
                  mono=True,
                  normalize=False,
@@ -117,10 +117,10 @@ class WavenetDataset(torch.utils.data.Dataset):
             sample = np.concatenate((sample1, sample2))
 
         example = torch.from_numpy(sample).type(torch.LongTensor)
-        one_hot = torch.FloatTensor(self.classes, self._item_length).zero_()
-        one_hot.scatter_(0, example[:self._item_length].unsqueeze(0), 1.)
+        # one_hot = torch.FloatTensor(self.classes, self._item_length).zero_()
+        # one_hot.scatter_(0, example[:self._item_length].unsqueeze(0), 1.)
         target = example[-self.target_length:].unsqueeze(0)
-        return one_hot, target
+        return example, target
 
     def __len__(self):
         test_length = math.floor(self._length / self._test_stride)
