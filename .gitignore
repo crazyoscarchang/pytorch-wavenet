@@ -3,7 +3,7 @@ __pycache__/
 #.idea
 _generated_samples/
 _train_samples/
-logs/
+#logs/
 notebooks/
 profiling/
 snapshots/

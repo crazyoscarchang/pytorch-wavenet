@@ -1,6 +1,7 @@
 from audio_data import WavenetDataset
 from model_logging import Logger, TensorboardLogger
 from scipy.io import wavfile
+import tensorflow as tf
 import time
 import torch
 from wavenet_model import WaveNetModel, load_latest_model_from
@@ -63,23 +64,24 @@ def generate_and_log_samples(step):
 
 
 def generate_samples(model):
-    sample_length = 1 #32000
+    sample_length = 8000
     gen_model = load_latest_model_from('snapshots', use_cuda=False)
     print("start generating...")
     samples = generate_audio(model,
                              length=sample_length,
                              temperatures=[0.5])
-    wavfile.write("example_data.wav", 48000, samples)
+    # wavfile.write("example_data.wav", 48000, samples)
+    tf_samples = tf.convert_to_tensor(samples, dtype=tf.float32)
+    step = 200
+    logger.audio_summary('temperature_1.0', tf_samples, step, sr=16000)
 
 
-
-"""
 logger = TensorboardLogger(log_interval=200,
                            validation_interval=400,
                            generate_interval=800,
                            generate_function=generate_and_log_samples,
                            log_dir="logs/chaconne_model")
-"""
+
 trainer = WavenetTrainer(model=model,
                          dataset=data,
                          lr=0.0001,
