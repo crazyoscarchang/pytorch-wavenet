@@ -64,16 +64,17 @@ def generate_and_log_samples(step):
 
 
 def generate_samples(model):
-    sample_length = 8000
+    sample_length = 32000
     gen_model = load_latest_model_from('snapshots', use_cuda=False)
     print("start generating...")
     samples = generate_audio(model,
                              length=sample_length,
-                             temperatures=[0.5])
-    # wavfile.write("example_data.wav", 48000, samples)
+                             temperatures=[0.0])
     tf_samples = tf.convert_to_tensor(samples, dtype=tf.float32)
     step = 200
+    print("samples shape: ", tf_samples.shape)
     logger.audio_summary('temperature_1.0', tf_samples, step, sr=16000)
+    wavfile.write("example_data.wav", 48000, tf_samples)
 
 
 logger = TensorboardLogger(log_interval=200,

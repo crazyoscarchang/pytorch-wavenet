@@ -63,7 +63,7 @@ class WavenetTrainer:
             #tic = time.time()
         for (x, target) in iter(self.dataloader):
 
-            for epoch in range(40):
+            for epoch in range(100):
                 y = Variable(x.type(self.dtype))
                 z = Variable(target.view(-1).type(self.ltype))
 
