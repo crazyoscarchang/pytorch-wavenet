@@ -63,7 +63,7 @@ def generate_and_log_samples(step):
 
 
 def generate_samples(model):
-    sample_length = 32000
+    sample_length = 1 #32000
     gen_model = load_latest_model_from('snapshots', use_cuda=False)
     print("start generating...")
     samples = generate_audio(model,
