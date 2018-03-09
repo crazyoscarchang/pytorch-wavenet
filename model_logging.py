@@ -33,8 +33,8 @@ class Logger:
             self.accumulated_loss = 0
         if current_step % self.validation_interval == 0:
             self.validate(current_step)
-        if current_step % self.generate_interval == 0:
-            self.generate(current_step)
+        # if current_step % self.generate_interval == 0:
+        #     self.generate(current_step)
 
     def log_loss(self, current_step):
         avg_loss = self.accumulated_loss / self.log_interval

@@ -58,36 +58,41 @@ class WavenetTrainer:
                                                       num_workers=8,
                                                       pin_memory=False)
         step = continue_training_at_step
-        for current_epoch in range(epochs):
-            print("epoch", current_epoch)
-            tic = time.time()
-            for (x, target) in iter(self.dataloader):
-                x = Variable(x.type(self.dtype))
-                target = Variable(target.view(-1).type(self.ltype))
+        # for current_epoch in range(epochs):
+        #     print("epoch", current_epoch)
+        #     tic = time.time()
+        _x, _target = iter(self.dataloader).next()
+        for i in range(100):
+            x = Variable(_x.type(self.dtype))
+            target = Variable(_target.view(-1).type(self.ltype))
 
-                output = self.model(x)
-                loss = F.cross_entropy(output.squeeze(), target.squeeze())
-                self.optimizer.zero_grad()
-                loss.backward()
-                loss = loss.data[0]
+            output = self.model(x)
+            loss = F.cross_entropy(output.squeeze(), target.squeeze())
+            self.optimizer.zero_grad()
+            loss.backward()
+            loss = loss.data[0]
+            if i % 10 == 0:
+                print("loss at step {} : {:.2f}".format(i, loss))
 
-                if self.clip is not None:
-                    torch.nn.utils.clip_grad_norm(self.model.parameters(), self.clip)
-                self.optimizer.step()
-                step += 1
+            if self.clip is not None:
+                torch.nn.utils.clip_grad_norm(self.model.parameters(), self.clip)
+            self.optimizer.step()
+            step += 1
 
-                # time step duration:
-                if step == 100:
-                    toc = time.time()
-                    print("one training step does take approximately " + str((toc - tic) * 0.01) + " seconds)")
+            # time step duration:
+            """
+            if step == 100:
+                toc = time.time()
+                print("one training step does take approximately " + str((toc - tic) * 0.01) + " seconds)")
 
-                if step % self.snapshot_interval == 0:
-                    if self.snapshot_path is None:
-                        continue
-                    time_string = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())
-                    torch.save(self.model, self.snapshot_path + '/' + self.snapshot_name + '_' + time_string)
+            if step % self.snapshot_interval == 0:
+                if self.snapshot_path is None:
+                    continue
+                time_string = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())
+                torch.save(self.model, self.snapshot_path + '/' + self.snapshot_name + '_' + time_string)
+            """
 
-                self.logger.log(step, loss)
+            # self.logger.log(step, loss)
 
     def validate(self):
         self.model.eval()
