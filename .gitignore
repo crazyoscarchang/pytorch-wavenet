@@ -1,9 +1,9 @@
 #.ipynb_checkpoints/
-#__pycache__/
+__pycache__/
 #.idea
 _generated_samples/
 _train_samples/
-logs/
+#logs/
 notebooks/
 profiling/
 snapshots/
@@ -13,3 +13,6 @@ tests/logs/
 !/generated_samples/chaconne_temp_0,8.mp3
 !/generated_samples/chaconne_temp_0,5.mp3
 !/snapshots/chaconne_model_2017-12-28_16-44-12
+data
+venv
+.ipynb_checkpoints
